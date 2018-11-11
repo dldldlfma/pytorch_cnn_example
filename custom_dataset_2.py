@@ -1,6 +1,6 @@
 '''
     모두를 위한 딥러닝 시즌2 pytorch
-    *** Custom Dataset은 어떻게 쓰나요? ***
+    *** Custom Dataset은 어떻게 쓰나요? (2)***
 
     2. 읽어온 Custom Dataset에 대해서 transform 진행하기
 
@@ -19,6 +19,8 @@
                                  transforms.ToTensor()]
      )
 
+     이번 코드에서는 transforms를 이용해서 기존의 origin_data를 작은 크기로 변환하고 저장하는 작업을 수행해 봅시다.
+
     '''
 
 
@@ -33,13 +35,22 @@ if __name__ =="__main__":
     #다음장에서는 ToTensor까지 적용된 코드로 수행하도록 하겠습니다.
 
     trans = transforms.Compose([
-        transforms.Resize((256,256)),
+        transforms.Resize((32,64)),
     ])
-    train_data=torchvision.datasets.ImageFolder(root='C:\image\chair\\train',transform=trans)
+    train_data=torchvision.datasets.ImageFolder(root='./origin_data',transform=trans)
 
     for num, value in enumerate(train_data):
         data, label = value
         print(num, data, label)
-        break
+
+        # 위에 import 하지는 않았지만 torchvision이 이미지를 PIL library를 이용해서 다루기 때문에
+        # 자동으로 읽어진 이미지는 PIL의 data type을 가지게 됩니다.
+        # 따라서 PIL.Image.Image의 기능중 save라는 기능을 이용해서 저장을 수행합니다.
+        # 지금 코드에는 train_data folder가 있지만 삭제하고 직접 train_folder와 gray, red 폴더를 만들고
+        # 아래 코드를 수행해보세요
+        if(label==0):
+            data.save("./train_data/gray/%d_%d.jpeg" % (num, label))
+        else:
+            data.save("./train_data/red/%d_%d.jpeg" % (num, label))
 
 data.show()

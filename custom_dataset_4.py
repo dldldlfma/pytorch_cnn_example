@@ -1,29 +1,33 @@
 '''
     모두를 위한 딥러닝 시즌2 pytorch
-    *** Custom Dataset은 어떻게 쓰나요? ***
+    *** Custom Dataset은 어떻게 쓰나요? (4)***
 
-    이제 training을 위한 코드를 작성해 보도록 하겠습니다.
+    이번에는 Neural Network를 만들어 보겠습니다.
+    이전 장에서 다뤘던 내용들을 한번 다시 되집어 볼까요?
 
-    datasets으로 불러오는 방법을 수행해보죠
+    우리는 학습시킬 Neural Network를 class를 통해서 정의합니다.
 
-    우선 form torch.utils.data import DataLoader 명령으로
+    class "Neural Network의 이름"(nn.Module):
+        def __init__(self):
+            super(Neural Network의 이름",self).__init__()
+            ~~~~~~~~~~~~~~~~
+        def __forword(self,inputs):
+            ~~~~~~~~~~~~~~~~
 
-    DataLoader를 가져 옵니다.
+        위와 같은 형태로 선언 했던것 기억 나시나요?
 
-    DataLoader에는 아까 만든 train_data를 넣어주고 몇가지 인자를 추가하여 값을 넣어줍니다.
+        우리는 Convolution layer를 사용하기로 했으니까 Convolution 연산에 대해서 알아봅시다.
 
-    torch.utils.data.DataLoader가 입력을 받는 자세한 값들은 아래 링크에서 확인해보세요
-    https://pytorch.org/docs/master/data.html?highlight=dataloader#torch.utils.data.DataLoader
+        자 빠르게 command창을 켜고(linux나 mac이라면 terminal)
 
-    간단한 것들만 살펴보겠습니다.
-
-    dataset     : torchvision.datasets.ImageFolder로 만들어낸 train_data값을 넣어주면 됩니다.
-                  이어서 진행할 강의에서 사용할 torchvision.datasets.이하의 dataset도 불러온 다음  dataset = 하고 넣어주시면 됩니다.
-                  사용방법은 아래를 참고하세요.
-
-    batch_size  : batch_size는 말그대로 batch_size 입니다.
-    shuffle     : dataset을 섞는 겁니다.
-    num_worker  : 데이터 loader를 하기 위해 사용할 core의 수를 결정합니다. core가 많을 수록 빠릅니다.
+        import torch.nn as nn을 하고
+        dir(nn)명령어를 입력해 볼까요?
+        엄청 나게 많은 것을이 나오는걸 보셨나요?
+        dir은 괄호 안의 값에 속한 function이나 value를 보여주는 pythnon의 기본 기능입니다.
+        내가 사용해야 되는 function이 무슨 기능이 있는지 아주 좋은 함수죠! (모르셨다면 어마어마한 꿀팁 아닙니까 정말?)
+        거기 나와있는거 다 쓰시면 됩니다.
+        CNN Architecture중 가장 간단한 LeNet-5를 만들어 볼껀데
+        이제 시작해볼까요?
     '''
 
 
@@ -39,48 +43,34 @@ data=0
 class NN(nn.Module):
     def __init__(self):
         super(NN,self).__init__()
-        self.conv1 = nn.Conv2d(3,16,5)
-        self.pool1 = nn.MaxPool2d(2,2)
-        self.conv2 = nn.Conv2d(16,32,5)
-        self.conv3 = nn.Conv2d(32,64,5)
-        self.layer1 = nn.Sequential(
-            nn.Conv2d(64, 64, 5),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-            nn.Conv2d(64, 32, 5),
-            nn.ReLU(inplace=True)
-        )
-        self.fc = nn.Sequential(nn.Linear(32*6*6,10),
-                                nn.ReLU(inplace=True),
-                                nn.Linear(10,2))
-
+        self.conv1 = nn.Conv2d(3,6,5)
+        self.conv2 = nn.Conv2d(6,16,5)
+        self.pool=nn.MaxPool2d(2)
+        self.fc1 = nn.Linear(16*13*29,120)
+        self.fc2 = nn.Linear(120,2)
 
     def forward(self,x):
-        x = F.relu(self.conv1(x))
-        x = self.pool1(x)
-        x = F.relu(self.conv2(x))
-        x = self.pool1(x)
-        x = F.relu(self.conv3(x))
-        x = self.layer1(x)
-        print(x.shape)
+        x=F.relu(self.conv1(x))
+        x=self.pool(x)
+        x=F.relu(self.conv2(x))
+        x=self.pool(x)
         x=x.view(x.shape[0],-1)
-        x=self.fc(x)
+        x=F.relu(self.fc1(x))
+        x=self.fc2(x)
         return x
 
 if __name__ =="__main__":
 
     trans = transforms.Compose([
-        transforms.Resize((128,128)),
         transforms.ToTensor()
     ])
 
-    train_data=torchvision.datasets.ImageFolder(root='C:\image\chair\\train',transform=trans)
+    train_data=torchvision.datasets.ImageFolder(root='./train_data',transform=trans)
     trainloader=DataLoader(dataset=train_data,batch_size=4,shuffle=True,num_workers=4)
 
     net = NN()
 
     for num, data in enumerate(trainloader):
-        #print(num, type(data[0]), data[1])
         print(data[0].shape)
         out = net(data[0])
         print(out.shape)

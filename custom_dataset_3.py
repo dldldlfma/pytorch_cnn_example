@@ -1,6 +1,6 @@
 '''
     모두를 위한 딥러닝 시즌2 pytorch
-    *** Custom Dataset은 어떻게 쓰나요? ***
+    *** Custom Dataset은 어떻게 쓰나요? (3)***
 
     이제 training을 위한 코드를 작성해 보도록 하겠습니다.
 
@@ -37,11 +37,10 @@ data=0
 if __name__ =="__main__":
 
     trans = transforms.Compose([
-        transforms.Resize((256,256)),
         #아까 없던 코드니까 추가해주세요!
         transforms.ToTensor()
     ])
-    train_data=torchvision.datasets.ImageFolder(root='C:\image\chair\\train',transform=trans)
+    train_data=torchvision.datasets.ImageFolder(root='./train_data',transform=trans)
 
     trainloader=DataLoader(dataset=train_data,batch_size=4,shuffle=True,num_workers=4)
 
