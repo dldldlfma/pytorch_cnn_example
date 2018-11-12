@@ -35,7 +35,7 @@ if __name__ =="__main__":
     #다음장에서는 ToTensor까지 적용된 코드로 수행하도록 하겠습니다.
 
     trans = transforms.Compose([
-        transforms.Resize((32,64)),
+        transforms.Resize((64,128)),
     ])
     train_data=torchvision.datasets.ImageFolder(root='./origin_data',transform=trans)
 

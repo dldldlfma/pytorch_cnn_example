@@ -84,7 +84,7 @@ if __name__ == "__main__":
     optim = torch.optim.Adam(net.parameters(), lr=0.00001)
     loss_function = nn.CrossEntropyLoss()
 
-    epochs = 3
+    epochs = 30
     for epoch in range(epochs):
         running_loss = 0.0
         for num, data in enumerate(trainloader):
